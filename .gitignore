@@ -9,6 +9,9 @@ frontend/dist/
 .DS_Store
 Thumbs.db
 
+# IDE
+.idea/
+
 # Claude Code session state
 .claude/
 
