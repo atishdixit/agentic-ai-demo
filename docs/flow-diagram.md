@@ -3,7 +3,7 @@
 ```mermaid
 flowchart TD
     U[User enters a topic in the React app] --> F[React Frontend<br/>Vite, localhost:5173]
-    F -->|POST /api/run| B[FastAPI Backend<br/>localhost:8000]
+    F -->|POST /api/run| B[Spring Boot Backend<br/>localhost:8000]
     B --> O[Orchestrator]
 
     O --> R[Researcher Agent]
@@ -22,7 +22,7 @@ flowchart TD
 ## How it works
 
 1. **User** types a topic into the React frontend and clicks **Run**.
-2. The frontend sends the topic to the FastAPI backend's `/api/run` endpoint.
+2. The frontend sends the topic to the Spring Boot backend's `/api/run` endpoint.
 3. The backend **orchestrator** runs three agents **sequentially**, each a separate
    call to the same local **Ollama** model (`llama3.2:3b`) with a different system
    prompt/role:

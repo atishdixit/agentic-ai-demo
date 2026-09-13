@@ -10,22 +10,26 @@ and an explanation of how the agents talk to each other.
 
 ## Tech stack
 
-| Layer          | Tech                                   |
-|----------------|-----------------------------------------|
-| AI model       | Ollama, running locally (`llama3.2:3b`) |
-| Backend        | Python, FastAPI                         |
-| Frontend       | React (Vite)                            |
-| Infrastructure | Docker Compose (optional)               |
-| Quick start    | Windows `.bat` scripts                  |
+| Layer          | Tech                                    |
+|----------------|------------------------------------------|
+| AI model       | Ollama, running locally (`llama3.2:3b`)  |
+| Backend        | Java 21, Spring Boot 3, Maven            |
+| Frontend       | React (Vite)                             |
+| Infrastructure | Docker Compose (optional)                |
+| Quick start    | Windows `.bat` scripts                   |
 
 ## Prerequisites
 
 - [Ollama](https://ollama.com) installed and on your PATH.
-- Python 3.10+
+- Java 21+ (JDK).
 - Node.js 18+
 
 The `llama3.2:3b` model will be pulled automatically by `setup.bat` if you
 don't already have it (`ollama pull llama3.2:3b`).
+
+No separate Maven install is required — the project ships with the Maven
+Wrapper (`backend/mvnw.cmd`), which downloads the right Maven version on
+first use.
 
 ## Quick start (Windows, one click)
 
@@ -33,16 +37,17 @@ don't already have it (`ollama pull llama3.2:3b`).
 setup.bat
 ```
 
-Run this once. It creates a Python virtual environment, installs backend
-and frontend dependencies, and pulls the Ollama model if needed.
+Run this once. It builds the Spring Boot backend (downloading its Maven
+dependencies), installs frontend dependencies, and pulls the Ollama model
+if needed.
 
 ```bash
 run.bat
 ```
 
 Run this any time you want to use the app. It starts Ollama (if not
-already running), the FastAPI backend on `http://localhost:8000`, the React
-frontend on `http://localhost:5173`, and opens it in your browser.
+already running), the Spring Boot backend on `http://localhost:8000`, the
+React frontend on `http://localhost:5173`, and opens it in your browser.
 
 ## Running with Docker instead
 
@@ -59,13 +64,16 @@ docker compose up --build
 
 ```
 backend/
-  agents/
-    researcher.py     # Agent 1: gathers research notes on the topic
-    writer.py          # Agent 2: drafts a short article from the notes
-    reviewer.py         # Agent 3: critiques the draft and finalizes it
-    ollama_client.py   # Shared helper that calls the local Ollama API
-  orchestrator.py       # Runs the 3 agents in sequence
-  main.py                # FastAPI app exposing POST /api/run
+  src/main/java/com/example/agenticdemo/
+    agent/
+      ResearcherAgent.java     # Agent 1: gathers research notes on the topic
+      WriterAgent.java          # Agent 2: drafts a short article from the notes
+      ReviewerAgent.java         # Agent 3: critiques the draft and finalizes it
+      PipelineOrchestrator.java # Runs the 3 agents in sequence
+    ollama/OllamaClient.java     # Shared helper that calls the local Ollama API
+    web/RunController.java       # REST controller exposing POST /api/run
+  src/main/resources/application.properties
+  pom.xml
 frontend/
   src/App.jsx            # UI: enter a topic, see each agent's output
 infra/
@@ -89,3 +97,11 @@ Each agent is just the *same* local model called with a different system
 prompt/role — the "multi-agent" behavior comes from the orchestration
 (sequential hand-off of state), not from needing multiple different
 models.
+
+## A note on speed
+
+Every agent step is a real call to your local Ollama model, run on your
+own CPU/GPU. On modest hardware (CPU-only inference), a full 3-agent run
+can take a couple of minutes — that's expected, not a bug. The backend
+caps each agent's response length (`num_predict`) to keep things
+reasonably fast.

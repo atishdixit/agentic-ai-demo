@@ -1,8 +1,5 @@
-# Python
-backend/venv/
-__pycache__/
-*.pyc
-backend/.env
+# Java / Maven
+backend/target/
 
 # Node
 frontend/node_modules/
@@ -12,6 +9,9 @@ frontend/dist/
 .DS_Store
 Thumbs.db
 
+# Claude Code session state
+.claude/
+
 # Local scratch / test output
 backend/*.log
-backend/pipeline_test_result.json
+backend/*.json

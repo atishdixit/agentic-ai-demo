@@ -13,14 +13,14 @@ if errorlevel 1 (
     echo Ollama already running.
 )
 
-echo Starting backend (FastAPI) on http://localhost:8000 ...
-start "Agentic AI - Backend" cmd /k "cd /d "%~dp0backend" && call venv\Scripts\activate.bat && uvicorn main:app --reload --port 8000"
+echo Starting backend (Spring Boot) on http://localhost:8000 ...
+start "Agentic AI - Backend" cmd /k "cd /d "%~dp0backend" && java -jar target\agentic-ai-demo-backend-1.0.0.jar"
 
 echo Starting frontend (React/Vite) on http://localhost:5173 ...
 start "Agentic AI - Frontend" cmd /k "cd /d "%~dp0frontend" && npm run dev"
 
 echo Waiting for the servers to come up ...
-timeout /t 6 >nul
+timeout /t 12 >nul
 
 start "" "http://localhost:5173"
 
