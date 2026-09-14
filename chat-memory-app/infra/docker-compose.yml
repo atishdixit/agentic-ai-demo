@@ -1,0 +1,55 @@
+services:
+  mysql:
+    image: mysql:8.0
+    environment:
+      MYSQL_ROOT_PASSWORD: "${MYSQL_ROOT_PASSWORD:-root}"
+      MYSQL_DATABASE: "${MYSQL_DATABASE:-chatmemory}"
+      MYSQL_USER: "${MYSQL_USER:-chatapp}"
+      MYSQL_PASSWORD: "${MYSQL_PASSWORD:-chatapp}"
+    ports:
+      - "${MYSQL_PORT:-3306}:3306"
+    volumes:
+      - chat-mysql-data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${MYSQL_ROOT_PASSWORD:-root}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  backend:
+    build:
+      context: ..
+      dockerfile: infra/backend.Dockerfile
+    ports:
+      - "${API_PORT:-8081}:8081"
+    environment:
+      MYSQL_HOST: mysql
+      MYSQL_PORT: 3306
+      MYSQL_DATABASE: "${MYSQL_DATABASE:-chatmemory}"
+      MYSQL_USER: "${MYSQL_USER:-chatapp}"
+      MYSQL_PASSWORD: "${MYSQL_PASSWORD:-chatapp}"
+      OLLAMA_BASE_URL: "http://host.docker.internal:11434"
+      OLLAMA_MODEL: "${OLLAMA_MODEL:-llama3.2:3b}"
+      CHAT_TEMPERATURE: "${CHAT_TEMPERATURE:-0.6}"
+      CHAT_MAX_TOKENS: "${CHAT_MAX_TOKENS:-300}"
+      CHAT_MEMORY_WINDOW: "${CHAT_MEMORY_WINDOW:-10}"
+      UI_ORIGIN: "http://localhost:${UI_PORT:-4200}"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    depends_on:
+      mysql:
+        condition: service_healthy
+    volumes:
+      - ../logs:/app/logs
+
+  frontend:
+    build:
+      context: ..
+      dockerfile: infra/frontend.Dockerfile
+    ports:
+      - "${UI_PORT:-4200}:80"
+    depends_on:
+      - backend
+
+volumes:
+  chat-mysql-data:

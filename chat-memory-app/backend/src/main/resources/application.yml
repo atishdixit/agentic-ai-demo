@@ -1,0 +1,37 @@
+spring:
+  application:
+    name: chat-memory-app
+
+  datasource:
+    url: jdbc:mysql://${MYSQL_HOST:localhost}:${MYSQL_PORT:3306}/${MYSQL_DATABASE:chatmemory}?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true
+    username: ${MYSQL_USER:chatapp}
+    password: ${MYSQL_PASSWORD:chatapp}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  ai:
+    ollama:
+      base-url: ${OLLAMA_BASE_URL:http://localhost:11434}
+      chat:
+        model: ${OLLAMA_MODEL:llama3.2:3b}
+    chat:
+      memory:
+        repository:
+          jdbc:
+            # Creates the ai_chat_memory table on startup if it doesn't already exist -
+            # see schema-mysql.sql inside spring-ai-model-chat-memory-repository-jdbc.
+            initialize-schema: always
+
+server:
+  port: ${API_PORT:8081}
+
+app:
+  chat:
+    model: ${OLLAMA_MODEL:llama3.2:3b}
+    temperature: ${CHAT_TEMPERATURE:0.6}
+    max-tokens: ${CHAT_MAX_TOKENS:300}
+    memory-window: ${CHAT_MEMORY_WINDOW:10}
+  cors:
+    allowed-origin: ${UI_ORIGIN:http://localhost:4200}
+
+logging:
+  config: classpath:log4j2.xml

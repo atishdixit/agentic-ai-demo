@@ -1,0 +1,11 @@
+<div class="message-list">
+  @if (messages.length === 0) {
+    <p class="empty-hint">Say hello to start a conversation — it's remembered next time you visit.</p>
+  }
+  @for (message of messages; track $index) {
+    <app-chat-message [message]="message" />
+  }
+  @if (waitingForReply) {
+    <app-loading-spinner />
+  }
+</div>

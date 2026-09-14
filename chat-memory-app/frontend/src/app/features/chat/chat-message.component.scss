@@ -1,0 +1,29 @@
+.message {
+  display: flex;
+  margin-bottom: 10px;
+
+  &.user { justify-content: flex-end; }
+  &.assistant { justify-content: flex-start; }
+
+  .bubble {
+    max-width: 75%;
+    padding: 10px 14px;
+    border-radius: 12px;
+    font-size: 0.95rem;
+    line-height: 1.4;
+
+    p { margin: 0; white-space: pre-wrap; }
+  }
+
+  &.user .bubble {
+    background: #2563eb;
+    color: #fff;
+    border-bottom-right-radius: 2px;
+  }
+
+  &.assistant .bubble {
+    background: #f3f4f6;
+    color: #111827;
+    border-bottom-left-radius: 2px;
+  }
+}

@@ -1,0 +1,22 @@
+<div class="chat">
+  @if (!joined) {
+    <form class="join-form" (ngSubmit)="join()">
+      <label for="username">Enter a name to start (or continue) a conversation</label>
+      <div class="join-row">
+        <input id="username" type="text" name="username" [(ngModel)]="username" placeholder="e.g. atish" autocomplete="off" />
+        <button type="submit" [disabled]="!username.trim()">Start chatting</button>
+      </div>
+    </form>
+  } @else {
+    <div class="session-bar">
+      <span class="chatting-as">Chatting as <strong>{{ username }}</strong></span>
+      <button type="button" class="switch-user" (click)="switchUser()">Switch user</button>
+    </div>
+
+    <app-error-banner [message]="errorMessage" />
+
+    <app-chat-message-list [messages]="messages" [waitingForReply]="waitingForReply" />
+
+    <app-chat-input [disabled]="waitingForReply" (send)="onSend($event)" />
+  }
+</div>
